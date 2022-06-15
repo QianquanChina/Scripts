@@ -120,7 +120,7 @@ get_bytes
 vel_recv=$(get_velocity $received_bytes $old_received_bytes $now)
 vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes $now)
 
-xsetroot -name " $(check_connect) $vel_recv $vel_trans $(dwm_alsa) [ $(print_bat) ] $(print_date) Grace"
+xsetroot -name " $(check_connect) $vel_recv $vel_trans $(dwm_alsa) [ $(print_bat) ] $(print_date) Grace"
 
 # Update old values to perform new calculations
 old_received_bytes=$received_bytes
