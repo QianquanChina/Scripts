@@ -29,15 +29,20 @@ old_transmitted_bytes=$transmitted_bytes
 old_time=$now
 
 check_connect(){
+
     interface=$(ip route get 8.8.8.8 2>/dev/null| awk '{print $5}')
-    line=$(grep $interface /proc/net/dev | cut -d ':' -f 2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')
-    sped=$(echo $line | sed -r "s/.*=(.*).*/\1/")
-    if [ "$sped" -eq 0 ]; then
+    if [ "$interface" = "" ]; then
         printf "睊"
     else
-        printf "直 "
-        name=$(iw wlp3s0 info | awk '/ssid/' | awk '{print $2}')
-        printf "%s" "$name"
+        line=$(grep $interface /proc/net/dev | cut -d ':' -f 2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')
+        sped=$(echo $line | sed -r "s/.*=(.*).*/\1/")
+        if [ "$sped" -eq 0 ]; then
+            printf "睊"
+        else
+            printf "直 "
+            name=$(iw wlp3s0 info | awk '/ssid/' | awk '{print $2}')
+            printf "%s" "$name"
+        fi
     fi
 }
 
