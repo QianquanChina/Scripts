@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 result=$(ps ax|grep -v grep|grep trayer)
 echo $result
 if [ "$result" == "" ]; then

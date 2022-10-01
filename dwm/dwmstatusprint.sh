@@ -31,7 +31,7 @@ old_time=$now
 check_connect(){
 
     interface=$(ip route get 8.8.8.8 2>/dev/null| awk '{print $5}')
-    if [ "$interface" = "" ]; then
+    if [ "$interface" != "wlp3s0" ]; then
         printf "睊"
     else
         line=$(grep $interface /proc/net/dev | cut -d ':' -f 2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')
@@ -40,9 +40,19 @@ check_connect(){
             printf "睊"
         else
             printf "直 "
-            name=$(iw wlp3s0 info | awk '/ssid/' | awk '{print $2}')
+            name=$(iw dev wlp3s0 link | awk '/SSID/' | awk '{print $2}')
             printf "%s" "$name"
         fi
+    fi
+}
+
+check_blue_tooth_connect()
+{
+    name=$(bluetoothctl info | awk '/Name/' | awk '{print $2}')
+    if [ "$name" = "EDIFIER" ]; then
+        printf "﫽"
+    else
+        printf "﫾"
     fi
 }
 
@@ -88,7 +98,7 @@ get_time_until_charged() {
 }
 
 print_bat(){
-    echo "$(get_battery_charging_status) $(get_battery_combined_percent)%, $(get_time_until_charged )";
+    echo "$(get_battery_charging_status) $(get_battery_combined_percent)% $(get_time_until_charged )";
 }
 
 print_date(){
@@ -97,9 +107,9 @@ print_date(){
 
 dwm_alsa () {
     VOL=$(amixer get Master | tail -n1 | sed -r "s/.*\[(.*)%\].*/\1/")
-    VOLSTAT=$(amixer get Master | tail -n1 | sed -r "s/.*\[(.*)%\] \[(.*)\]/\2/")
+    VOLSTAT=$(amixer get Master | tail -n1 | awk '{print $6}')
     printf "%s" "$SEP1"
-    if [ "$VOL" -eq 0 ] || [ "$VOLSTAT" = "off" ]; then
+    if [ "$VOL" -eq 0 ] || [ "$VOLSTAT" = "[off]" ]; then
         printf "婢"
     else
         printf "墳 %s%%" "$VOL"
@@ -111,7 +121,7 @@ get_bytes
 vel_recv=$(get_velocity $received_bytes $old_received_bytes $now)
 vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes $now)
 
-xsetroot -name " $(check_connect) $vel_recv $vel_trans $(dwm_alsa) [ $(print_bat) ] Grace"
+xsetroot -name " $(check_connect) $vel_recv $vel_trans $(dwm_alsa) $(check_blue_tooth_connect) [ $(print_bat) ] Grace"
 
 # Update old values to perform new calculations
 old_received_bytes=$received_bytes
