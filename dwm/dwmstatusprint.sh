@@ -48,7 +48,7 @@ check_connect(){
 
 check_blue_tooth_connect()
 {
-    name=$(bluetoothctl info 0C:AE:BD:71:92:38 | awk '/Name/' | awk '{print $2}')
+    name=$(bluetoothctl info 0C:AE:BD:71:92:38 | awk '/Connected/' | awk '{print $2}')
     if [ "$name" = "EDIFIER" ]; then
         printf "﫽"
     else
